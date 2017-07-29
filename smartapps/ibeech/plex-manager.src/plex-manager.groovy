@@ -13,7 +13,7 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  * 
- * 	===========INSTRUCTIONS===========
+ * 	===========INSTRUCTIONS============
 	1) For UK go to: https://graph-eu01-euwest1.api.smartthings.com3
 	2) For US go to: https://graph.api.smartthings.com1
 	3) Click 'My SmartApps'
