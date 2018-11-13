@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Executable: devicetypes/patrickkpowell/shelly1.src
+
+Name: shelly-1.groovy
+SHA1-Digest: 52d225a3b5de5670b2b2250e1ed4971d7ef9cc48
+
+Name: i18n/messages.properties
+SHA1-Digest: da39a3ee5e6b4b0d3255bfef95601890afd80709
