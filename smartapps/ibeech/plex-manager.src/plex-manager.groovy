@@ -13,7 +13,9 @@
  *  for the specific language governing permissions and limitations under the License.
  *
  * 
- * 	===========INSTRUCTIONS===========
+
+ *  ===========INSTRUCTIONS===========
+
         1) For UK go to: https://graph-eu01-euwest1.api.smartthings.com3
         2) For US go to: https://graph.api.smartthings.com1
         3) Click 'My SmartApps'
@@ -201,10 +203,12 @@ private removeChildDevices(delete) {
     catch (e) { log.error "There was an error (${e}) when trying to delete the child device" }
 }
 
-def response(evt) {	 
+def response(evt) {  
 
     log.trace "in response(evt)";
 
+
+    log.trace "in response(evt)";
     def msg = parseLanMessage(evt.description);
     if(msg && msg.body && msg.body.startsWith("<?xml")){
 
@@ -272,7 +276,7 @@ def updatePHT(phtName, phtIP, phtIdentifier){
         if(!pht){ 
             // The PHT does not exist, create it
             log.debug "This PHT does not exist, creating a new one now"
-            pht = addChildDevice("ibeech", "Plex Home Theatre", child_deviceNetworkID, theHub.id, [label:phtName, name:phtName])		
+            pht = addChildDevice("ibeech", "Plex Home Theatre", child_deviceNetworkID, theHub.id, [label:phtName, name:phtName])        
         } else {
 
             // Update the network device ID
