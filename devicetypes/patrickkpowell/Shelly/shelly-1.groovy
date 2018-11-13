@@ -25,25 +25,17 @@ metadata {
 		// TODO: define status and reply messages here
 	}
 
-	//tiles {
-		// TODO: define your main and details tiles here
-    //    standardTile("Shelly1", "device.switch", width: 2, height: 2, canChangeIcon: true) {
-	//		state "on", label:'${name}', action:"off", icon:"https://raw.githubusercontent.com/Webstas/BW-SmartThings/master/assets/200px-Gnome-system-shutdown.svg.png", backgroundColor: "#79b821"
-	//		state "off", label:'${name}', action:"on", icon:"https://raw.githubusercontent.com/Webstas/BW-SmartThings/master/assets/200px-Gnome-system-shutdown.svg.png"
-    //    }
-	//}
-     tiles(scale: 2) {
-        // standard tile with actions named
-        standardTile("switch", "device.switch", width: 2, height: 2, canChangeIcon: true) {
-            state "off", label: '${currentValue}', action: "switch.on",
-                  icon: "st.switches.switch.off", backgroundColor: "#ffffff"
-            state "on", label: '${currentValue}', action: "switch.off",
-                  icon: "st.switches.switch.on", backgroundColor: "#00a0dc"
-        }
+  tiles(scale: 2) {
+    // standard tile with actions named
+    standardTile("switch", "device.switch", width: 2, height: 2, canChangeIcon: true) {
+      state "off", label: '${currentValue}', action: "switch.on",
+        icon: "st.switches.switch.off", backgroundColor: "#ffffff"
+          state "on", label: '${currentValue}', action: "switch.off",
+            icon: "st.switches.switch.on", backgroundColor: "#00a0dc"
+      }
 
-        // the "switch" tile will appear in the Things view
-        main("switch")
-
+      // the "switch" tile will appear in the Things view
+      main("switch")
     }
     
     preferences {
