@@ -14,16 +14,16 @@
  *
  */
 metadata {
-	definition (name: "Shelly1", namespace: "patrickkpowell", author: "Patrick Powell") {
-		//capability "light"
+  definition (name: "Shelly1", namespace: "patrickkpowell", author: "Patrick Powell") {
+    //capability "light"
         capability "switch"
         attribute "ip", "string"
-	}
+  }
 
 
-	simulator {
-		// TODO: define status and reply messages here
-	}
+  simulator {
+    // TODO: define status and reply messages here
+  }
 
   tiles(scale: 2) {
     // standard tile with actions named
@@ -55,6 +55,15 @@ def parse(description) {
     def xml = msg.xml                // => any XML included in response body, as a document tree structure
     def data = msg.data              // => either JSON or XML in response body (whichever is specified by content-type header in response)
     log.debug data.ison
+
+    log.debug "Message Headers String "+headersAsString
+    log.debug "Message Headers Map "+headerMap
+    log.debug "Body "+body
+    log.debug "Status "+status
+    log.debug "JSON "+json
+    log.debug "XML "+xml
+    log.debug "Data "+data
+    
     if ( data.ison == true ) {
       log.debug "TRUE"
       sendEvent(name: "switch", value: "on", isStateChange: true, displayed: false)
@@ -63,23 +72,27 @@ def parse(description) {
       log.debug "FALSE"
       sendEvent(name: "switch", value: "off", isStateChange: true, displayed: false)
     }
+    //push()
 }
 
 // handle commands
 def off() {
-	log.debug "Executing 'off'"
-    push()
+  log.debug "Executing 'off'"
+    //push()
+    //toggleRelay "turn=on"
     toggleRelay "turn=off"
 }
 
 def on() {
-	log.debug "Executing 'on'"
-    push()
+  log.debug "Executing 'on'"
+    //push()
+    //toggleRelay "turn=off"
     toggleRelay "turn=on"
 }
 
 def toggleRelay(action) {
-  def result = new physicalgraph.device.HubAction(
+  //def result = new physicalgraph.device.HubAction(
+  sendHubCommand(new physicalgraph.device.HubAction(
     method: "POST",
     path: "/relay/0",
     body: action,
@@ -87,8 +100,9 @@ def toggleRelay(action) {
       HOST: getHostAddress(),
       "Content-Type": "application/x-www-form-urlencoded"
     ]
-  )
+  ))
   result
+  //return
 }
 
 private getHostAddress() {
@@ -113,30 +127,34 @@ private String convertPortToHex(port) {
 
 def updated() {
    log.debug "updated()"
-   //getStatus()
+   unschedule()
+   runEvery1Minute("poll")
+   poll()
 }
 
-//def poll() {
-//  log.debug "Polling"
-//  getStatus()
-//}
+def refresh() {
+  getStatus()
+}
 
-//def getStatus() {
-//  log.debug "Getting Status"
-//  def result = new physicalgraph.device.HubAction(
-//    method: "GET",
-//    path: "/relay/0",
-//    //body: "turn=what",
-//    headers: [
-//      HOST: getHostAddress(),
-//      "Content-Type": "application/x-www-form-urlencoded"
-//    ]
-//  )
-//  result
-//}
+def poll() {
+  getStatus()
+}
+
+def getStatus() {
+  log.debug "Polling"
+  //def result = new physicalgraph.device.HubAction(
+  sendHubCommand(new physicalgraph.device.HubAction(
+    method: "GET",
+    path: "/relay/0",
+    headers: [
+      HOST: getHostAddress(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    ]
+  ))
+}
 
 def push() {
-	sendEvent(name: "switch", value: "on", isStateChange: true, displayed: false)
-	sendEvent(name: "switch", value: "off", isStateChange: true, displayed: false)
-	sendEvent(name: "momentary", value: "pushed", isStateChange: true)
+  sendEvent(name: "switch", value: "on", isStateChange: true, displayed: false)
+  sendEvent(name: "switch", value: "off", isStateChange: true, displayed: false)
+  sendEvent(name: "momentary", value: "pushed", isStateChange: true)
 }
