@@ -53,15 +53,15 @@ def parse(description) {
     def json = msg.json              // => any JSON included in response body, as a data structure of lists and maps
     def xml = msg.xml                // => any XML included in response body, as a document tree structure
     def data = msg.data              // => either JSON or XML in response body (whichever is specified by content-type header in response)
-    log.debug data.ison
+    //log.debug data.ison
 
-    log.debug "Message Headers String "+headersAsString
-    log.debug "Message Headers Map "+headerMap
-    log.debug "Body "+body
-    log.debug "Status "+status
-    log.debug "JSON "+json
-    log.debug "XML "+xml
-    log.debug "Data "+data
+    //log.debug "Message Headers String "+headersAsString
+    //log.debug "Message Headers Map "+headerMap
+    //log.debug "Body "+body
+    //log.debug "Status "+status
+    //log.debug "JSON "+json
+    //log.debug "XML "+xml
+    //log.debug "Data "+data
     
     if ( data.ison == true ) {
       log.debug "TRUE"
