@@ -15,7 +15,6 @@
  */
 metadata {
   definition (name: "Shelly1", namespace: "patrickkpowell", author: "Patrick Powell") {
-    //capability "light"
         capability "switch"
         attribute "ip", "string"
   }
@@ -72,26 +71,20 @@ def parse(description) {
       log.debug "FALSE"
       sendEvent(name: "switch", value: "off", isStateChange: true, displayed: false)
     }
-    //push()
 }
 
 // handle commands
 def off() {
   log.debug "Executing 'off'"
-    //push()
-    //toggleRelay "turn=on"
     toggleRelay "turn=off"
 }
 
 def on() {
   log.debug "Executing 'on'"
-    //push()
-    //toggleRelay "turn=off"
     toggleRelay "turn=on"
 }
 
 def toggleRelay(action) {
-  //def result = new physicalgraph.device.HubAction(
   sendHubCommand(new physicalgraph.device.HubAction(
     method: "POST",
     path: "/relay/0",
@@ -102,7 +95,6 @@ def toggleRelay(action) {
     ]
   ))
   result
-  //return
 }
 
 private getHostAddress() {
@@ -142,7 +134,6 @@ def poll() {
 
 def getStatus() {
   log.debug "Polling"
-  //def result = new physicalgraph.device.HubAction(
   sendHubCommand(new physicalgraph.device.HubAction(
     method: "GET",
     path: "/relay/0",
