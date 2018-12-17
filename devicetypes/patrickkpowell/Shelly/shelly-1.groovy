@@ -14,11 +14,10 @@
  *
  */
 metadata {
-  definition (name: "Shelly1", namespace: "patrickkpowell", author: "Patrick Powell") {
-        capability "switch"
-        attribute "ip", "string"
+  definition (name: "Shelly1or2", namespace: "patrickkpowell", author: "Patrick Powell") {
+    capability "switch"
+    attribute "ip", "string"
   }
-
 
   simulator {
     // TODO: define status and reply messages here
@@ -31,15 +30,20 @@ metadata {
         icon: "st.switches.switch.off", backgroundColor: "#ffffff"
           state "on", label: '${currentValue}', action: "switch.off",
             icon: "st.switches.switch.on", backgroundColor: "#00a0dc"
-      }
+    }
+    // the "switch" tile will appear in the Things view
+    main("switch")
+  }
 
-      // the "switch" tile will appear in the Things view
-      main("switch")
-    }
-    
-    preferences {
-        input("ip", "string", title:"Address", description:"Please enter your Shelly's I.P. address", defaultValue:"" , required: false, displayDuringSetup: true)
-    }
+  preferences {
+    input("ip", "string", title:"Address", description:"Please enter your Shelly's I.P. address", defaultValue:"" , required: false, displayDuringSetup: true)
+    input(name: "Relay", type: "enum", title:"Relay", options: ["0","1"], displayDuringSetup: true)
+	//section() {
+	//	input("HTTPAuth", "bool", title:"Requires User Auth?", description: "Choose if the HTTP requires basic authentication", defaultValue: false, required: true, displayDuringSetup: true)
+	//	input("HTTPUser", "string", title:"HTTP User", description: "Enter your basic username", required: false, displayDuringSetup: true)
+	//	input("HTTPPassword", "string", title:"HTTP Password", description: "Enter your basic password", required: false, displayDuringSetup: true)
+	//}
+  }
 }
 
 def parse(description) {
@@ -62,7 +66,7 @@ def parse(description) {
     //log.debug "JSON "+json
     //log.debug "XML "+xml
     //log.debug "Data "+data
-    
+
     if ( data.ison == true ) {
       log.debug "TRUE"
       sendEvent(name: "switch", value: "on", isStateChange: true, displayed: false)
@@ -73,79 +77,81 @@ def parse(description) {
     }
 }
 
-// handle commands
-def off() {
-  log.debug "Executing 'off'"
+  // handle commands
+  def off() {
+    log.debug "Executing 'off'"
     toggleRelay "turn=off"
-}
+  }
 
-def on() {
-  log.debug "Executing 'on'"
+  def on() {
+    log.debug "Executing 'on'"
     toggleRelay "turn=on"
-}
+  }
 
-def toggleRelay(action) {
-  sendHubCommand(new physicalgraph.device.HubAction(
-    method: "POST",
-    path: "/relay/0",
-    body: action,
-    headers: [
-      HOST: getHostAddress(),
-      "Content-Type": "application/x-www-form-urlencoded"
-    ]
-  ))
-  result
-}
+  def toggleRelay(action) {
+  log.debug "Calling /relay/"+Relay
+    sendHubCommand(new physicalgraph.device.HubAction(
+      method: "POST",
+      path: "/relay/"+Relay,
+      body: action,
+      headers: [
+        HOST: getHostAddress(),
+        "Content-Type": "application/x-www-form-urlencoded"
+      ]
+    ))
+    result
+  }
 
-private getHostAddress() {
-  log.debug "Using IP: $ip  and PORT: 80 for device: ${device.id}"
-  device.deviceNetworkId = convertIPtoHex(ip)+":"+convertPortToHex(80)
-  log.debug device.deviceNetworkId
-  return ip+":80"
-}
+  private getHostAddress() {
+    log.debug "Using IP: "+ip+" and PORT: 80 for device: {device.id}"
+    device.deviceNetworkId = convertIPtoHex(ip)+":"+convertPortToHex(8+Relay)
+    log.debug device.deviceNetworkId
+    //return ip+":80"
+    return device.deviceNetworkId
+  }
 
-private String convertIPtoHex(ipAddress) { 
-   String hex = ipAddress.tokenize( '.' ).collect {  String.format( '%02x', it.toInteger() ) }.join()
-   log.debug "IP address entered is $ipAddress and the converted hex code is $hex"
-   return hex
+  private String convertIPtoHex(ipAddress) {
+    String hex = ipAddress.tokenize( '.' ).collect { String.format( '%02x', it.toInteger() ) }.join()
+    log.debug "IP address entered is $ipAddress and the converted hex code is $hex"
+    return hex
+  }
 
-}
+  private String convertPortToHex(port) {
+    String hexport = port.toString().format( '%04x', port.toInteger() )
+    log.debug hexport
+    return hexport
+  }
 
-private String convertPortToHex(port) {
-   String hexport = port.toString().format( '%04x', port.toInteger() )
-   log.debug hexport
-   return hexport
-}
+  def updated() {
+    log.debug "updated()"
+    unschedule()
+    runEvery1Minute("poll")
+    poll()
+  }
 
-def updated() {
-   log.debug "updated()"
-   unschedule()
-   runEvery1Minute("poll")
-   poll()
-}
+  def refresh() {
+    getStatus()
+  }
 
-def refresh() {
-  getStatus()
-}
+  def poll() {
+    getStatus()
+    push()
+  }
 
-def poll() {
-  getStatus()
-}
+  def getStatus() {
+    log.debug "Polling"
+    sendHubCommand(new physicalgraph.device.HubAction(
+      method: "GET",
+      path: "/relay/"+Relay,
+      headers: [
+        HOST: getHostAddress(),
+        "Content-Type": "application/x-www-form-urlencoded"
+      ]
+    ))
+  }
 
-def getStatus() {
-  log.debug "Polling"
-  sendHubCommand(new physicalgraph.device.HubAction(
-    method: "GET",
-    path: "/relay/0",
-    headers: [
-      HOST: getHostAddress(),
-      "Content-Type": "application/x-www-form-urlencoded"
-    ]
-  ))
-}
-
-def push() {
-  sendEvent(name: "switch", value: "on", isStateChange: true, displayed: false)
-  sendEvent(name: "switch", value: "off", isStateChange: true, displayed: false)
-  sendEvent(name: "momentary", value: "pushed", isStateChange: true)
-}
+  def push() {
+    sendEvent(name: "switch", value: "on", isStateChange: true, displayed: false)
+    sendEvent(name: "switch", value: "off", isStateChange: true, displayed: false)
+    sendEvent(name: "momentary", value: "pushed", isStateChange: true)
+  }
