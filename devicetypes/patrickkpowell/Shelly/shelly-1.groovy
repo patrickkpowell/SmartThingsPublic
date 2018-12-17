@@ -104,20 +104,20 @@ def parse(description) {
 
   private getHostAddress() {
     log.debug "Using IP: "+ip+" and PORT: 80 for device: {device.id}"
-    device.deviceNetworkId = convertIPtoHex(ip)+":"+convertPortToHex(8+Relay)
+    device.deviceNetworkId = convertIPtoHex(ip)+":"+convertPortToHex(80)
     log.debug device.deviceNetworkId
     //return ip+":80"
     return device.deviceNetworkId
   }
 
   private String convertIPtoHex(ipAddress) {
-    String hex = ipAddress.tokenize( '.' ).collect { String.format( '%02x', it.toInteger() ) }.join()
+    String hex = ipAddress.tokenize( '.' ).collect { String.format( '%02x', it.toInteger() ) }.join().toUpperCase()
     log.debug "IP address entered is $ipAddress and the converted hex code is $hex"
     return hex
   }
 
   private String convertPortToHex(port) {
-    String hexport = port.toString().format( '%04x', port.toInteger() )
+    String hexport = port.toString().format('%04x', port.toInteger()).toUpperCase()
     log.debug hexport
     return hexport
   }
