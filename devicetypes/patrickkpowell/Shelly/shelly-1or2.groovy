@@ -1,5 +1,5 @@
 /**
- *  Shelly1
+ *  Shelly1or2
  *
  *  Copyright 2018 Patrick Powell
  *
