@@ -106,7 +106,7 @@ def parse(description) {
 
   private getHostAddress() {
     log.debug "Using IP: "+ip+" and PORT: 80 for device: {device.id}"
-    device.deviceNetworkId = convertIPtoHex(ip)+":"+convertPortToHex(80)
+    device.deviceNetworkId = convertIPtoHex(ip)+":"+convertPortToHex(8+Relay)
     log.debug device.deviceNetworkId
     //return ip+":80"
     return device.deviceNetworkId
